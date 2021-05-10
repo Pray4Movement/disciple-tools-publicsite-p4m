@@ -43,7 +43,8 @@ class DT_P4E_Frontpage_Config
     }
 
     public function _browser_tab_title( $title ){
-        return __( "Prayer Map", 'disciple_tools' );
+        $content = get_option('landing_content');
+        return esc_html( $content['title'] ?? '' );
     }
     public function _header(){
         $content = get_option('landing_content');

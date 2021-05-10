@@ -31,6 +31,23 @@ class DT_Publicsite_Endpoints
 
         dt_write_log( $params );
 
+        // sanitize
+        if ( isset( $params['email'] ) && ! empty( $params['email'] )) {
+            return new WP_Error(__METHOD__, 'Failed to find email address' );
+        }
+
+        $params = dt_recursive_sanitize_array($params);
+
+        $email = $params['email'];
+        $name = $params['name'] ?? $params['email'];
+
+
+        // create record
+
+        // log report
+
+        //
+
         return $params;
     }
     public function _authorize_url( $authorized ){
