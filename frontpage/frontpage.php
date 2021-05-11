@@ -13,12 +13,13 @@ class DT_P4E_Frontpage_Config
         $url = dt_get_url_path();
         add_action( "template_redirect", [ $this, 'my_theme_redirect' ] );
 
+        add_filter( 'dt_custom_fields_settings', [ $this, 'dt_custom_fields_settings' ], 10, 2 );
+
         if ( empty($url) ) {
             add_filter( 'dt_blank_access', function(){ return true;
             } );
             add_filter( 'dt_allow_non_login_access', function(){ return true;
             }, 100, 1 );
-
 
             add_filter( "dt_blank_title", [ $this, "_browser_tab_title" ] );
             add_action( 'dt_blank_head', [ $this, '_header' ] );
@@ -31,6 +32,21 @@ class DT_P4E_Frontpage_Config
 
             add_action( 'wp_enqueue_scripts', [ $this, 'scripts' ], 99 );
         }
+    }
+
+    public function dt_custom_fields_settings( $fields, $post_type ){
+        if ( $post_type === 'contacts' ) {
+            if ( ! isset( $fields['sources']['default']['dt_frontpage_p4m'] ) ) {
+                $fields['sources']['default']['dt_frontpage_p4m'] = [
+                    'label' => 'Pray4 Frontpage',
+                    'key' => 'dt_frontpage_p4m',
+                    'type' => 'other',
+                    'description' => 'This lead came from the front page via the DT public site plugin.',
+                    'enabled' => 1
+                ];
+            }
+        }
+        return $fields;
     }
 
     public function my_theme_redirect() {
@@ -52,7 +68,6 @@ class DT_P4E_Frontpage_Config
         <meta charset="utf-8">
         <title><?php echo esc_html( $content['title'] ?? '' ) ?></title>
         <meta name="description" content="<?php echo esc_html( $content['description'] ?? '' ) ?>">
-        <meta name="author" content="<?php echo esc_html( $content['title'] ?? '' ) ?>">
         <meta name="author" content="<?php echo esc_html( $content['title'] ?? '' ) ?>">
         <?php
         wp_head();
@@ -727,11 +742,9 @@ class DT_P4E_Frontpage_Config
                                     return;
                                 }
 
-                                let full_name = $('#full_name').val()
-
                                 $.ajax({
                                     type: "POST",
-                                    data: JSON.stringify({ name: full_name, email: email, phone: phone }),
+                                    data: JSON.stringify({ name: name, email: email, phone: phone }),
                                     contentType: "application/json; charset=utf-8",
                                     dataType: "json",
                                     url: jsObject.root + 'publicsite_p4m/v1/public_endpoint',

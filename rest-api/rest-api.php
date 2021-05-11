@@ -32,23 +32,45 @@ class DT_Publicsite_Endpoints
         dt_write_log( $params );
 
         // sanitize
-        if ( isset( $params['email'] ) && ! empty( $params['email'] )) {
+        if ( isset( $params['email'] ) && empty( $params['email'] )) {
             return new WP_Error(__METHOD__, 'Failed to find email address' );
         }
 
         $params = dt_recursive_sanitize_array($params);
 
         $email = $params['email'];
-        $name = $params['name'] ?? $params['email'];
+        $name = $params['name'] ?? $email;
+        $phone = $params['phone'] ?? '';
+
+        $fields = [
+            "title" => $name,
+            'contact_email' => [
+                'values' => [
+                    [ 'value' => $email ]
+                ]
+            ],
+            'sources' => [
+                'values' => [
+                    [ 'value' => 'dt_frontpage_p4m']
+                ]
+            ]
+        ];
+        if ( ! empty( $phone ) ) {
+            $fields['contact_phone'] = [
+                'values' => [
+                    [ 'value' => $phone ]
+                ]
+            ];
+        }
+        $contact_id = DT_Posts::create_post('contacts', $fields, false, false );
 
 
-        // create record
 
-        // log report
+        dt_write_log( $contact_id );
 
-        //
 
-        return $params;
+
+        return $contact_id;
     }
     public function _authorize_url( $authorized ){
         if ( isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'publicsite_p4m/v1/public_endpoint' ) !== false ) {
