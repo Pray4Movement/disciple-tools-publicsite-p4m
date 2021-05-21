@@ -12,6 +12,7 @@ class DT_P4E_Frontpage_Config
     public function __construct() {
         $url = dt_get_url_path();
         add_action( "template_redirect", [ $this, 'my_theme_redirect' ] );
+        add_filter( 'dt_front_page', [ $this, 'front_page' ] );
 
         add_filter( 'dt_custom_fields_settings', [ $this, 'dt_custom_fields_settings' ], 10, 2 );
 
@@ -56,6 +57,13 @@ class DT_P4E_Frontpage_Config
             include( $path );
             die();
         }
+    }
+
+    public function front_page( $page ){
+        if ( is_user_logged_in() ) {
+            return site_url( '/contacts/' );
+        }
+        return $page;
     }
 
     public function _browser_tab_title( $title ){
