@@ -16,7 +16,7 @@ class DT_P4E_Frontpage_Config
 
         add_filter( 'dt_custom_fields_settings', [ $this, 'dt_custom_fields_settings' ], 10, 2 );
 
-        if ( empty($url) ) {
+        if ( empty($url) && ! dt_is_rest() ) {
             add_filter( 'dt_blank_access', function(){ return true;
             } );
             add_filter( 'dt_allow_non_login_access', function(){ return true;
