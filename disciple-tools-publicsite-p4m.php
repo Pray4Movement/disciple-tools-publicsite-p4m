@@ -87,8 +87,17 @@ class DT_Publicsite_P4M {
         if ( is_admin() ) { // adds links to the plugin description area in the plugin admin list.
             require_once ('admin/admin.php');
             add_filter( 'plugin_row_meta', [ $this, 'plugin_description_links' ], 10, 4 );
+
+            add_filter( 'dt_remove_menu_pages', [ $this, 'add_media_tab' ], 10, 1 );
         }
 
+    }
+
+    public function add_media_tab( $list ) {
+        if ( isset( $list['media'] ) ) {
+            unset( $list['media'] );
+        }
+        return $list;
     }
 
     /**
